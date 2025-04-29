@@ -1,83 +1,65 @@
-import BookingService from '../services/booking_service';
-import {Socket } from 'socket.io-client';
+import BookingService from "../services/booking_service";
 
 export default class BookingController {
-  private BookingService: BookingService;
-  private socket: Socket;
+  private bookingService: BookingService;
 
-  constructor(BookingService: BookingService, socket: Socket) {
-    this.BookingService = BookingService;
-    this.socket = socket;
+  constructor(bookingService: BookingService,) {
+    this.bookingService = bookingService;
   }
 
   async createBooking(data: any) {
     try {
       const { userId, pickupLocation, dropoffLocation, vehicleModel } = data;
 
-      const booking = await this.BookingService.createBooking({
+      // Create booking
+      const booking = await this.bookingService.createBooking({
         userId,
         pickupLocation,
         dropoffLocation,
         vehicleModel,
       });
 
-      const drivers = await this.BookingService.findNearbyDrivers(
+      // Find nearby drivers
+      const drivers = await this.bookingService.findNearbyDrivers(
         pickupLocation.latitude,
         pickupLocation.longitude,
         vehicleModel
       );
-
-      if (!drivers.length) {
-        await this.BookingService.updateBooking(booking.id,'Cancelled' );
-
-        this.socket.emit('rideStatus', {
-          bookingId: booking.bookingId,
-          status: 'Failed',
-          message: 'No drivers available',
-        }, `user:${userId}`);
-        return { ...booking, message: 'No drivers available', status: 'Failed' };
-      } 
-
-      for (const driver of drivers) {
-        const accepted = await this.sendRideRequest(driver.driverId, {
-          bookingId: booking.bookingId,
-          userId,
-          pickup: pickupLocation.address,
-          dropoff: dropoffLocation.address,
-          customer: { name: 'Customer', location: [pickupLocation.longitude, pickupLocation.latitude] },
-          vehicleModel,
-        });
-
-        if (accepted) {
-          const updatedBooking = await this.BookingService.updateBooking(booking.id,'Accepted');
-
-          this.socket.emit('rideStatus', {
-            bookingId: booking.bookingId,
-            status: 'Accepted',
-            driverId: driver.driverId,
-          }, `user:${userId}`);
-
-          return updatedBooking;
-        }
-      }
-
-     //'Pending', 'Accepted', 'Confirmed', 'Completed', 'Cancelled'
-      await this.BookingService.updateBooking(booking.id,'Cancelled');
-
-      this.socket.emit('rideStatus', {
-        bookingId: booking.bookingId,
-        status: 'Failed',
-        message: 'No driver accepted',
-      }, `user:${userId}`);
-
-      return { ...booking, message: 'No driver accepted the ride', status: 'Failed' };
+      
+return {
+  nearbyDrivers: drivers,
+  booking: {
+    id: booking._id.toString(),
+    ride_id: booking.ride_id,
+    status: booking.status,
+  },
+  userPickupCoordinators: pickupLocation,
+  userDropCoordinators: dropoffLocation,
+  distance: booking.distance,
+  price: booking.price,
+};
 
     } catch (error) {
-      return { message: `Error creating booking: ${(error as Error).message}`, status: 'Failed' };
+      console.error("Error creating booking:", error);
+      return {
+        message: `Error creating booking: ${(error as Error).message}`,
+        status: "Failed",
+      };
     }
   }
 
-  private async sendRideRequest(driverId: string, rideData: any): Promise<boolean> {
-    return false;
+  async updateBooking(data: any){
+    try {
+    const response = await  this.bookingService.updateBooking(data.id, data.action);
+    console.log("updateBooking res:",response);
+    return response;
+    
+    } catch (error) {
+      console.log(error);
+      return {
+        message: `Error updating booking: ${(error as Error).message}`,
+        status: "Failed",
+      };
+    }
   }
 }

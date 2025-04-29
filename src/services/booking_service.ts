@@ -3,7 +3,7 @@ import redisClient from '../config/redis.config';
 import { PricingService } from './pricing_service';
 import { getDistance } from 'geolib'; 
 import { generatePIN } from '../utils/genaratePIN';
-
+import { BookingInterface } from '../model/booking.model';
 export default class BookingService {
   private PricingService: PricingService;
   private bookingRepo: BookingRepository;
@@ -18,7 +18,7 @@ export default class BookingService {
     pickupLocation: { address: string; latitude: number; longitude: number };
     dropoffLocation: { address: string; latitude: number; longitude: number };
     vehicleModel: string;
-  }): Promise<{ id: string; bookingId: string; status: string; message?: string }> {
+  }) {
 
     try {
       const distanceMeters = getDistance(
@@ -46,12 +46,7 @@ export default class BookingService {
         })
       );
   
-      return {
-        id: booking._id.toString(), 
-        bookingId: booking.ride_id,
-        status: 'Pending',
-        message: 'Booking created',
-      };
+      return booking;
     } catch (error) {
       throw new Error(`Failed to create booking: ${(error as Error).message}`);
     }

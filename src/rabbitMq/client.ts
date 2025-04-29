@@ -1,23 +1,19 @@
 import { Channel, Connection, connect } from "amqplib";
-import { io } from 'socket.io-client';
-
 
 import {rabbitMq} from "../config/rabbitMq.config";
-import Consumer from './consumer'
-import Producer from './producer'
+import Consumer from './consumer';
+import Producer from './producer';
 import MessageHandler from "./messageHandler";
 import BookingController from "../controller/booking.controllers";
 import BookingService from '../services/booking_service';
 import BookingRepository from "../repositories/booking.repository";
 import { PricingService } from '../services/pricing_service';
 
-const socket = io('http://localhost:3000');
-const bookingRepository = new BookingRepository()
-const pricingService = new PricingService()
-const bookingService  = new BookingService(pricingService,bookingRepository)
-const bookingController = new BookingController(bookingService,socket)
+const bookingRepository = new BookingRepository();
+const pricingService = new PricingService();
+const bookingService  = new BookingService(pricingService,bookingRepository);
+const bookingController = new BookingController(bookingService);
 const messageHandler = new MessageHandler(bookingController);
-
 
 class RabbitMQClient {
     private constructor() {}
@@ -53,7 +49,10 @@ class RabbitMQClient {
       
             const { queue: rpcQueue } = await this.consumerChannel.assertQueue(
               rabbitMq.queues.bookingQueue,
-              { exclusive: true }
+              {
+                durable: true,        
+                exclusive: false,      
+              }
             );
       
             this.producer = new Producer(this.producerChannel);

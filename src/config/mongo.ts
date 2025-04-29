@@ -5,12 +5,12 @@ dotenv.config()
 
 const connectDB=async():Promise<void>=>{
     try {
-        const MONGO_URLURL=process.env.NODE_ENV==='dev'?process.env.MONGO_URL_DEV:process.env.MONGO_URL_PRO
-        if(!MONGO_URLURL)
+        const MONGO_URL=process.env.NODE_ENV==='dev'?process.env.MONGO_URL_DEV:process.env.MONGO_URL_PRO
+        if(!MONGO_URL)
             {
                 throw new Error("MONGO_URL is not defined in environment variables.")
             }
-            await mongoose.connect(`${MONGO_URLURL}/Retro-Routes-booking`)
+            await mongoose.connect(`${MONGO_URL}/Retro-Routes-booking`)
             console.log("database Connected");
             
     } catch (error) {

@@ -12,9 +12,9 @@ export default class MessageHandler {
       case 'create-booking':
         response = await this.bookingController.createBooking(data);
         break;
-      // case 'update-booking':
-      //   response = await this.bookingController.updateBooking(data);
-      //   break;
+      case 'update-booking-status':
+        response = await this.bookingController.updateBooking(data);
+        break;
       // case 'ride-confirm':
       //   response = await this.bookingController.confirmRide(data);
       //   break;

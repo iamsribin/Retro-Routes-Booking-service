@@ -14,6 +14,13 @@ export default class BookingRepository {
     pin: number
   ): Promise<BookingInterface> {
     try {
+
+      console.log("data:",data);
+      console.log("distanceKm:",distanceKm,);
+      console.log("price:",price,);
+      console.log("pin:",pin,);
+      
+
       const response = await bookingModel.create({
         user_id: data.userId,
         ride_id: `ride_${Date.now()}`,
