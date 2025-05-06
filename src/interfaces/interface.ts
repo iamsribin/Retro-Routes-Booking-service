@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-
 // Interfaces
 export interface Coordinates {
   latitude: number;
@@ -14,6 +13,7 @@ export interface PricingConfig {
 }
 
 export interface BookingInterface extends Document {
+  _id: mongoose.Types.ObjectId
   ride_id: string;
   driver_id?: string;
   user_id: string;

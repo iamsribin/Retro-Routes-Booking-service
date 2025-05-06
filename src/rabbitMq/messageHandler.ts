@@ -1,4 +1,4 @@
-import BookingController from '../controller/booking.controllers';
+import BookingController from '../controller/implementaion/booking.controllers';
 import rabbitClient from './client';
 
 export default class MessageHandler {

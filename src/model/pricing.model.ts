@@ -1,7 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 
-
-
 const PricingSchema = new Schema({
     vehicleModel: { type: String, required: true, unique: true },
     basePrice: { type: Number, required: true },

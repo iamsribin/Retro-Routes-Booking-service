@@ -4,10 +4,10 @@ import {rabbitMq} from "../config/rabbitMq.config";
 import Consumer from './consumer';
 import Producer from './producer';
 import MessageHandler from "./messageHandler";
-import BookingController from "../controller/booking.controllers";
-import BookingService from '../services/booking_service';
-import BookingRepository from "../repositories/booking.repository";
-import { PricingService } from '../services/pricing_service';
+import BookingController from "../controller/implementaion/booking.controllers";
+import BookingService from '../services/implementation/booking_service';
+import BookingRepository from "../repositories/implementation/booking_repository";
+import { PricingService } from '../services/implementation/pricing_service';
 
 const bookingRepository = new BookingRepository();
 const pricingService = new PricingService();
@@ -82,7 +82,6 @@ class RabbitMQClient {
         
       }
       }
-  
 }
 
 export default RabbitMQClient.getInstance();

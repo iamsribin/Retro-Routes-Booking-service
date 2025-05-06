@@ -1,4 +1,4 @@
-import bookingModel, { BookingInterface } from "../model/booking.model";
+import bookingModel, { BookingInterface } from "../../model/booking.model";
 
 export default class BookingRepository {
 

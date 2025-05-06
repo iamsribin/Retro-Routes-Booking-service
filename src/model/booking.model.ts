@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface BookingInterface extends Document {
-  _id: string;
+  _id: mongoose.Types.ObjectId;
   ride_id: string;
   driver_id: string;
   user_id: string;

@@ -1,38 +1,46 @@
-import BookingRepository from '../repositories/booking.repository';
-import redisClient from '../config/redis.config';
+import  BookingRepository  from '../../repositories/implementation/booking_repository';
+import redisClient from '../../config/redis.config';
 import { PricingService } from './pricing_service';
-import { getDistance } from 'geolib'; 
-import { generatePIN } from '../utils/genaratePIN';
-import { BookingInterface } from '../model/booking.model';
-export default class BookingService {
+import { getDistance } from 'geolib';
+import { generatePIN } from '../../utils/generatePIN';
+import { CreateBookingRequest, DriverDetails } from '../../controller/interfaces/IBookingController';
+import { BookingInterface } from '../../interfaces/interface';
+import { IBookingService } from '../interfaces/IBookingService';
+
+export default class BookingService implements IBookingService {
   private PricingService: PricingService;
   private bookingRepo: BookingRepository;
 
-  constructor(pricingService:PricingService,bookingRepo:BookingRepository) {
+  constructor(pricingService: PricingService, bookingRepo: BookingRepository) {
     this.PricingService = pricingService;
     this.bookingRepo = bookingRepo;
   }
 
-  async createBooking(data: {
-    userId: string;
-    pickupLocation: { address: string; latitude: number; longitude: number };
-    dropoffLocation: { address: string; latitude: number; longitude: number };
-    vehicleModel: string;
-  }) {
-
+  /**
+   * Creates a new booking with calculated price and caches it in Redis
+   * @param data - Booking details including user ID, locations, and vehicle model
+   * @returns Promise resolving to the created booking
+   */
+  async createBooking(data: CreateBookingRequest): Promise<BookingInterface> {
     try {
       const distanceMeters = getDistance(
-        { latitude: data.pickupLocation.latitude, longitude: data.pickupLocation.longitude },
-        { latitude: data.dropoffLocation.latitude, longitude: data.dropoffLocation.longitude }
+        {
+          latitude: data.pickupLocation.latitude,
+          longitude: data.pickupLocation.longitude,
+        },
+        {
+          latitude: data.dropoffLocation.latitude,
+          longitude: data.dropoffLocation.longitude,
+        }
       );
 
       const distanceKm = distanceMeters / 1000;
-  
+
       const price = await this.PricingService.getPrice(distanceKm, data.vehicleModel);
       const pin = generatePIN();
-  
+
       const booking = await this.bookingRepo.createBooking(data, distanceKm, price, pin);
-  
+
       await redisClient.setEx(
         `booking:${booking.id}`,
         3600,
@@ -45,16 +53,22 @@ export default class BookingService {
           price,
         })
       );
-  
+
       return booking;
     } catch (error) {
       throw new Error(`Failed to create booking: ${(error as Error).message}`);
     }
   }
 
-  async findNearbyDrivers(latitude: number, longitude: number, vehicleModel: string): Promise<any[]> {
+  /**
+   * Finds nearby drivers matching the vehicle model within 5km
+   * @param latitude - Pickup location latitude
+   * @param longitude - Pickup location longitude
+   * @param vehicleModel - Vehicle model to match
+   * @returns Promise resolving to sorted list of nearby drivers
+   */
+  async findNearbyDrivers(latitude: number, longitude: number, vehicleModel: string): Promise<DriverDetails[]> {
     try {
-
       const drivers = (await redisClient.sendCommand([
         'GEORADIUS',
         'driver:locations',
@@ -64,18 +78,16 @@ export default class BookingService {
         'm',
         'WITHDIST',
       ])) as Array<[string, string]>;
-  
-      console.log('Raw geoRadius response:', JSON.stringify(drivers, null, 2));
-  
-      const driverDetails: any[] = [];
-  
+
+      const driverDetails: DriverDetails[] = [];
+
       for (const [driverId, distance] of drivers) {
         const driverDetailsKey = `onlineDriver:details:${driverId}`;
         const driverData = await redisClient.get(driverDetailsKey);
-  
+
         if (driverData) {
           const parsedDriver = JSON.parse(driverData);
-  
+
           if (parsedDriver.vehicleModel === vehicleModel) {
             driverDetails.push({
               driverId,
@@ -84,27 +96,28 @@ export default class BookingService {
               cancelCount: parsedDriver.cancelCount,
             });
           }
-        } else {
-          console.log(`No details found for driver ${driverId}`);
         }
       }
-  
+
       return driverDetails.sort((a, b) => {
         if (a.distance !== b.distance) return a.distance - b.distance;
         if (a.rating !== b.rating) return b.rating - a.rating;
         return a.cancelCount - b.cancelCount;
       });
-
     } catch (error) {
-      console.error('Error in findNearbyDrivers:', error);
       throw new Error(`Failed to find nearby drivers: ${(error as Error).message}`);
     }
   }
-  
 
-  async updateBooking(id:string, action: string ) {
+  /**
+   * Updates a booking's status
+   * @param id - Booking ID
+   * @param action - New status
+   * @returns Promise resolving to the updated booking or null
+   */
+  async updateBooking(id: string, action: string): Promise<BookingInterface | null> {
     try {
-      return await this.bookingRepo.updateBookingStatus(id,action);
+      return await this.bookingRepo.updateBookingStatus(id, action);
     } catch (error) {
       throw new Error(`Failed to update booking: ${(error as Error).message}`);
     }
