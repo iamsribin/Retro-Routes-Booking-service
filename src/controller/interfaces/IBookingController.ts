@@ -26,7 +26,6 @@ export interface DriverDetails {
 }
 
 export interface CreateBookingResponse {
-  nearbyDrivers: DriverDetails[];
   booking: {
     id: string;
     ride_id: string;

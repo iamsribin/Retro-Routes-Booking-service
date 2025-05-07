@@ -1,26 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-
-export interface BookingInterface extends Document {
-  _id: mongoose.Types.ObjectId;
-  ride_id: string;
-  driver_id: string;
-  user_id: string;
-  pickupCoordinates: { latitude: number; longitude: number };
-  dropoffCoordinates: { latitude: number; longitude: number };
-  pickupLocation: string;
-  dropoffLocation: string;
-  driverCoordinates?: { latitude: number; longitude: number };
-  distance: string;
-  duration: string;
-  vehicleModel: string;
-  price: number;
-  date: Date;
-  status: string;
-  pin: number;
-  paymentMode: string;
-  feedback?: string;
-  rating?: number;
-}  
+import { BookingInterface } from '../interfaces/interface';
 
 const BookingSchema: Schema = new Schema({
   ride_id: { type: String, required: true },

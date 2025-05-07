@@ -1,5 +1,5 @@
-import bookingModel, { BookingInterface } from "../../model/booking.model";
-
+import bookingModel from "../../model/booking.model";
+import { BookingInterface } from "../../interfaces/interface";
 export default class BookingRepository {
 
   async createBooking(

@@ -16,22 +16,30 @@ export default class BookingController implements IBookingController {
   async createBooking(data: CreateBookingRequest): Promise<ControllerResponse> {
     try {
       const { userId, pickupLocation, dropoffLocation, vehicleModel } = data;
+      console.log("jkdhs");
+
+      // const drivers = await this.bookingService.findNearbyDrivers(
+      //   pickupLocation.latitude,
+      //   pickupLocation.longitude,
+      //   vehicleModel
+      // );
+      // console.log("drivers",drivers);
+
+      // if(!drivers.length){
+      //   return   { 
+      //   message: 'no drivers found',
+      //   status: 'Failed'}
+      // } 
 
       const booking = await this.bookingService.createBooking({
-        userId,
+        userId, 
         pickupLocation,
         dropoffLocation,
         vehicleModel,
       });
 
-      const drivers = await this.bookingService.findNearbyDrivers(
-        pickupLocation.latitude,
-        pickupLocation.longitude,
-        vehicleModel
-      );
 
       const response: CreateBookingResponse = {
-        nearbyDrivers: drivers,
         booking: {
           id: booking._id.toString(),
           ride_id: booking.ride_id,
@@ -49,7 +57,7 @@ export default class BookingController implements IBookingController {
         message: `Error creating booking: ${(error as Error).message}`,
         status: 'Failed',
       };
-    }
+    }    
   }
 
   /**
