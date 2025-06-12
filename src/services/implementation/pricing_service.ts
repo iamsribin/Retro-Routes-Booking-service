@@ -9,21 +9,26 @@ export class PricingService implements IPricingService {
    * @param vehicleModel - Vehicle model
    * @returns Promise resolving to the calculated price
    */
-  async getPrice(distanceKm: number, vehicleModel: string): Promise<number> {
-    try {
-      const config = await PricingModel.findOne({ vehicleModel });
-      if (!config) {
-        throw new Error(`Pricing configuration not found for ${vehicleModel}`);
-      }
-
-      const { basePrice, pricePerKm, minDistanceKm } = config;
-      const additionalDistance = Math.max(0, distanceKm - minDistanceKm);
-      const price = basePrice + additionalDistance * pricePerKm;
-      return Math.round(price);
-    } catch (error) {
-      throw new Error(`Price calculation failed: ${(error as Error).message}`);
+async getPrice(distanceKm: number, vehicleModel: string): Promise<number> {
+  try {
+    const config = await PricingModel.findOne({ vehicleModel });
+    if (!config) {
+      throw new Error(`Pricing configuration not found for ${vehicleModel}`);
     }
+
+    const { basePrice, pricePerKm, minDistanceKm } = config;
+
+    const minKm = parseFloat(minDistanceKm ?? "0");
+    const additionalDistance = Math.max(0, distanceKm - minKm);
+    const price = basePrice + additionalDistance * pricePerKm;
+
+    return Math.round(price);
+  } catch (error) {
+    throw new Error(`Price calculation failed: ${(error as Error).message}`);
   }
+}
+
+
 
   /**
    * Updates or creates pricing configuration for a vehicle model

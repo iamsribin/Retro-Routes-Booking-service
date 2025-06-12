@@ -1,53 +1,59 @@
 import bookingModel from "../../model/booking.model";
-import { BookingInterface } from "../../interfaces/interface";
-export default class BookingRepository {
+import { PricingModel } from "../../model/pricing.model";
+import { BookingInterface, PricingInterface } from "../../interfaces/interface";
+import { CreateBookingRequest, requestUpdateAcceptRide } from "../../controller/interfaces/IBookingController";
+import { IBookingRepository } from "../interfaces/IBookingRepo";
+import { mongo } from "mongoose";
 
-  async createBooking(
-    data: {
-      userId: string;
-      pickupLocation: { address: string; latitude: number; longitude: number };
-      dropoffLocation: { address: string; latitude: number; longitude: number };
-      vehicleModel: string;
-    },
-    distanceKm: number,
-    price: number,
-    pin: number
-  ): Promise<BookingInterface> {
-    try {
+export default class BookingRepository implements IBookingRepository {
 
-      console.log("data:",data);
-      console.log("distanceKm:",distanceKm,);
-      console.log("price:",price,);
-      console.log("pin:",pin,);
-      
+async createBooking(
+  data: CreateBookingRequest,
+  distanceKm: number,
+  price: number,
+  pin: number
+): Promise<BookingInterface> {
+  try {
+    console.log("data========", data);
+    console.log("other==", { distanceKm, pin, price });
 
-      const response = await bookingModel.create({
+    const response = await bookingModel.create({
+      ride_id: `ride_${Date.now()}`,
+
+      user: {
         user_id: data.userId,
-        ride_id: `ride_${Date.now()}`,
-        pickupCoordinates: {
-          latitude: data.pickupLocation.latitude,
-          longitude: data.pickupLocation.longitude,
-        },
-        dropoffCoordinates: {
-          latitude: data.dropoffLocation.latitude,
-          longitude: data.dropoffLocation.longitude,
-        },
-        pickupLocation: data.pickupLocation.address,
-        dropoffLocation: data.dropoffLocation.address,
-        vehicleModel: data.vehicleModel,
-        status: 'Pending',
-        distance: distanceKm,
-        price,
-        pin,
-      });
-  
-      return response;
-    } catch (error) {
-      console.log(error);
-      throw new Error(`Failed to create booking: ${(error as Error).message}`);
-    }
+        userName: data.userName,
+        userNumber: data.userNumber,
+        userProfile: data.userProfile 
+      },
+
+      pickupCoordinates: {
+        latitude: data.pickupLocation.latitude,
+        longitude: data.pickupLocation.longitude,
+      },
+      dropoffCoordinates: {
+        latitude: data.dropoffLocation.latitude,
+        longitude: data.dropoffLocation.longitude,
+      },
+
+      pickupLocation: data.pickupLocation.address,
+      dropoffLocation: data.dropoffLocation.address,
+
+      vehicleModel: data.vehicleModel,
+      duration: data.duration,
+      distance: data.distanceInfo?.distance || `${distanceKm} km`,
+      price,
+      pin,
+      status: "Pending",
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Failed to create booking: ${(error as Error).message}`);
   }
-  
+}
+
 
   async findBookingById(rideId: string): Promise<BookingInterface | null> {
     try {
@@ -58,13 +64,13 @@ export default class BookingRepository {
   }
 
   async updateBookingStatus(
-    id:string,
-    status: string,
+    id: string,
+    status: string
   ): Promise<BookingInterface | null> {
     try {
       return await bookingModel.findByIdAndUpdate(
         id,
-        { status},
+        { status },
         { new: true }
       );
     } catch (error) {
@@ -102,4 +108,78 @@ export default class BookingRepository {
       );
     }
   }
+
+  async fetchVehicles(): Promise<PricingInterface[] | []> {
+    try {
+      const data = await PricingModel.find();
+      return data;
+    } catch (error) {
+      throw new Error(`Failed fetch vehicles: ${(error as Error).message}`);
+    }
+  }
+
+async updateAcceptedRide(
+  data: requestUpdateAcceptRide
+): Promise<BookingInterface | null> {
+  try {
+    console.log("data---=", data);
+
+    const updatedBooking = await bookingModel.findByIdAndUpdate(
+      data.bookingId,
+      {
+        $set: {
+          driver: {
+            driver_id: data.driverDetails.driverId,
+            driverName: data.driverDetails.driverName,
+            driverNumber: data.driverDetails.mobile,
+            driverProfile: data.driverDetails.driverImage,
+          },
+          driverCoordinates: {
+            latitude: parseFloat(data.driverCoordinates.latitude),
+            longitude: parseFloat(data.driverCoordinates.longitude),
+          },
+          status: "Accepted",
+        },
+      },
+      { new: true } 
+    );
+
+    console.log("updatedBooking response==", updatedBooking);
+    return updatedBooking;
+  } catch (error) {
+    throw new Error(
+      `Failed to update booking status: ${(error as Error).message}`
+    );
+  }
+}
+
+
+async fetchBookingListWithDriverId(id:mongo.ObjectId) {
+  try {
+    console.log("driverId===", id);
+
+    const response = await bookingModel.find({ 'driver.driver_id': id.toString() });
+
+    return response;
+  } catch (error) {
+    console.log("error==", error);
+
+    throw new Error(`Failed to fetch bookings: ${(error as Error).message}`);
+  }
+}
+
+async fetchBookingListWithBookingId(id:mongo.ObjectId){
+    try {
+    console.log("bookingId ===", id);
+
+    const response = await bookingModel.findById(id);
+
+    return response;
+  } catch (error) {
+    console.log("error==", error);
+
+    throw new Error(`Failed to fetch bookings: ${(error as Error).message}`);
+  }
+}
+
 }

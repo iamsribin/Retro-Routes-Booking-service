@@ -1,4 +1,4 @@
-import { BookingInterface, Coordinates } from '../../interfaces/interface';
+import { BookingInterface, Coordinates, PricingInterface } from '../../interfaces/interface';
 
 export interface IBookingRepository {
   createBooking(
@@ -16,4 +16,5 @@ export interface IBookingRepository {
   updateBookingStatus(id: string, status: string): Promise<BookingInterface | null>;
   confirmRide(pin: number): Promise<BookingInterface | null>;
   updateDriverCoordinates(rideId: string, coordinates: Coordinates): Promise<BookingInterface | null>;
+  fetchVehicles(): Promise<PricingInterface[] | null>
 }

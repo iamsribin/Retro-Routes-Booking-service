@@ -47,13 +47,10 @@ class RabbitMQClient {
           this.producerChannel = producerChannel;
           this.consumerChannel = consumerChannel;
       
-            const { queue: rpcQueue } = await this.consumerChannel.assertQueue(
-              rabbitMq.queues.bookingQueue,
-              {
-                durable: true,        
-                exclusive: false,      
-              }
-            );
+const { queue: rpcQueue } = await this.consumerChannel.assertQueue(
+  rabbitMq.queues.bookingQueue
+  // or { exclusive: false } if you need to specify other options
+);
       
             this.producer = new Producer(this.producerChannel);
             this.consumer = new Consumer(this.consumerChannel, rpcQueue,messageHandler);
@@ -78,7 +75,7 @@ class RabbitMQClient {
         );
         
       } catch (error) {
-        console.log(error);
+        console.log("produce error==",error);
         
       }
       }
