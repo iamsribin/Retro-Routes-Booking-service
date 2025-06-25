@@ -23,7 +23,19 @@ export default class BookingController implements IBookingController {
    */
   async createBooking(data: CreateBookingRequest): Promise<ControllerResponse> {
     try {
-      const { userId, userName, pickupLocation, dropoffLocation, vehicleModel, duration, price, distance, distanceInfo, userNumber, userProfile} = data;
+      const {
+        userId,
+        userName,
+        pickupLocation,
+        dropoffLocation,
+        vehicleModel,
+        duration,
+        price,
+        distance,
+        distanceInfo,
+        userNumber,
+        userProfile,
+      } = data;
 
       const booking = await this.bookingService.createBooking({
         userId,
@@ -36,15 +48,15 @@ export default class BookingController implements IBookingController {
         duration,
         price,
         distance,
-        distanceInfo
+        distanceInfo,
       });
 
       const response: CreateBookingResponse = {
-        userData:{
-        user_id: booking.user.user_id,
-        userName: booking.user.userName,
-        userNumber: booking.user.userNumber,
-        userProfile: booking.user.userProfile
+        userData: {
+          user_id: booking.user.user_id,
+          userName: booking.user.userName,
+          userNumber: booking.user.userNumber,
+          userProfile: booking.user.userProfile,
         },
         booking: {
           id: booking._id.toString(),
@@ -74,7 +86,6 @@ export default class BookingController implements IBookingController {
    */
   async updateBooking(data: UpdateBookingRequest): Promise<ControllerResponse> {
     try {
-
       const response = await this.bookingService.updateBooking(
         data.id,
         data.action
@@ -84,7 +95,7 @@ export default class BookingController implements IBookingController {
       return {
         message: `Error updating booking: ${(error as Error).message}`,
         status: "Failed",
-      };                    
+      };
     }
   }
 
@@ -92,9 +103,8 @@ export default class BookingController implements IBookingController {
     data: requestUpdateAcceptRide
   ): Promise<ControllerResponse> {
     try {
-      
       const response = await this.bookingService.updateAcceptedRide(data);
-      
+
       return { message: "Success", data: response };
     } catch (error) {
       return {
@@ -104,12 +114,11 @@ export default class BookingController implements IBookingController {
     }
   }
 
-  async fetchVehicles():Promise <ControllerResponse> {
+  async fetchVehicles(): Promise<ControllerResponse> {
     try {
-
       const response = await this.bookingService.fetchVehicles();
 
-      return { message: "Success", data: response };    
+      return { message: "Success", data: response };
     } catch (error) {
       return {
         message: `Error get vehicles: ${(error as Error).message}`,
@@ -118,42 +127,59 @@ export default class BookingController implements IBookingController {
     }
   }
 
- async fetchDriverBookingList(id:mongo.ObjectId){
-  try {
-    
-   const data = await this.bookingService.fetchDriverBookingList(id);
-   
-   return {
-    status:"Success",
-    data
-   }
-  } catch (error) {
-    console.log(error);
-    return {
-      status:"Failed",
-      data: "failed to fetch booking list"
-    }
-  }
- }
+  async fetchDriverBookingList(id: mongo.ObjectId) {
+    try {
+      const data = await this.bookingService.fetchDriverBookingList(id);
+      console.log("data====", data);
 
- async fetchDriverBookingDetails(id:mongo.ObjectId){
-  try{
-   const data = await this.bookingService.fetchDriverBookingDetails(id);
-   console.log("dta====",{
-    status:"Success",
-    data
-   });
-   
-   return {
-    status:"Success", 
-    data
-   }
-  } catch (error) {
-    console.log(error);
-    return {
-      status:"Failed",
-      data: "failed to fetch booking list"
+      return {
+        status: "Success",
+        data,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: "Failed",
+        data: "failed to fetch booking list",
+      };
     }
   }
- }
+
+  async fetchDriverBookingDetails(id: mongo.ObjectId) {
+    try {
+      const data = await this.bookingService.fetchDriverBookingDetails(id);
+
+      return {
+        status: "Success",
+        data,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: "Failed",
+        data: "failed to fetch booking list",
+      };
+    }
+  }
+
+  async cancelRide(request: { userId: string; ride_id: string }) {
+    try {
+      
+      const data = await this.bookingService.cancelRide(
+        request.userId,
+        request.ride_id
+      );
+
+      return {
+        status: "Success",
+        data,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: "Failed",
+        data: "failed to fetch booking list",
+      };
+    }
+  }
 }

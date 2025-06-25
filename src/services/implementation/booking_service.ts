@@ -106,4 +106,14 @@ export default class BookingService implements IBookingService {
       throw new Error(`Failed fetch vehicles: ${(error as Error).message}`);
     }
   }
+
+  async cancelRide(user_id:string, ride_id:string){
+    try {
+      const response = await this.bookingRepo.cancelRide(user_id, ride_id);
+      return response
+    } catch (error) {
+      console.log("fetchDriverBookingList service",error);
+      throw new Error(`Failed fetch vehicles: ${(error as Error).message}`);
+    }
+  }
 }

@@ -182,4 +182,29 @@ async fetchBookingListWithBookingId(id:mongo.ObjectId){
   }
 }
 
+async cancelRide(user_id: string, ride_id: string) {
+  try {    
+    const response = await bookingModel.findOneAndUpdate(
+      { 
+        ride_id: ride_id,
+        'user.user_id': user_id,
+        status: { $ne: 'Cancelled' } 
+      },
+      { $set: { status: 'Cancelled' } },
+      { new: true } 
+    );
+    console.log("cancelRide res===",response);
+
+    if (!response) {
+      throw new Error('Ride not found or already cancelled');
+    }
+
+    return response;
+  } catch (error) {
+    console.log("cancelRide error==", error);
+    throw new Error(`Failed to cancel ride: ${(error as Error).message}`);
+  }
+}
+
+
 }

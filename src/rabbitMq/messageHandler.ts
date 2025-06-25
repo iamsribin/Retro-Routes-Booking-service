@@ -29,6 +29,9 @@ export default class MessageHandler {
       case "get-driver-booking-details":
         response = await this.bookingController.fetchDriverBookingDetails(data);
         break;
+      case "cancel_ride":
+        response = await this.bookingController.cancelRide(data);
+        break;
       
       default:
         response = { message: 'Request-key not found', status: 'Failed' };
