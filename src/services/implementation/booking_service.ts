@@ -1,4 +1,4 @@
-import BookingRepository from "../../repositories/implementation/booking_repository";
+import {BookingRepository} from "../../repositories/implementation/booking_repository";
 import { PricingService } from "./pricing_service";
 import { getDistance } from "geolib";
 import { generatePIN } from "../../utils/generatePIN";
@@ -11,7 +11,7 @@ import { BookingInterface } from "../../interfaces/interface";
 import { IBookingService } from "../interfaces/IBookingService";
 import { mongo } from "mongoose";
 
-export default class BookingService implements IBookingService {
+export class BookingService implements IBookingService {
   private PricingService: PricingService;
   private bookingRepo: BookingRepository;
 
@@ -116,4 +116,13 @@ export default class BookingService implements IBookingService {
       throw new Error(`Failed fetch vehicles: ${(error as Error).message}`);
     }
   }
+  async markBookingPaid(bookingId: string) {
+  // Your logic to mark booking as paid
+  // return a success message
+}
+
+async rollbackBooking(bookingId: string) {
+  // Your logic to rollback booking
+  // return a failure message
+}
 }

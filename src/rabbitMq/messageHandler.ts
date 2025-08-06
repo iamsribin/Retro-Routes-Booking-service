@@ -1,4 +1,4 @@
-import BookingController from '../controller/implementaion/booking.controllers';
+import BookingController from '../controller/implementation/booking.controllers';
 import rabbitClient from './client';
 
 export default class MessageHandler {
@@ -28,9 +28,6 @@ export default class MessageHandler {
 
       case "get-driver-booking-details":
         response = await this.bookingController.fetchDriverBookingDetails(data);
-        break;
-      case "cancel_ride":
-        response = await this.bookingController.cancelRide(data);
         break;
       
       default:

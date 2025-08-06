@@ -1,5 +1,5 @@
 import { mongo } from "mongoose";
-import BookingService from "../../services/implementation/booking_service";
+import {BookingService} from "../../services/implementation/booking_service";
 import {
   CreateBookingRequest,
   UpdateBookingRequest,
@@ -9,18 +9,13 @@ import {
   requestUpdateAcceptRide,
 } from "../interfaces/IBookingController";
 
-export default class BookingController implements IBookingController {
+export class BookingController implements IBookingController {
   private bookingService: BookingService;
 
   constructor(bookingService: BookingService) {
     this.bookingService = bookingService;
   }
 
-  /**
-   * Creates a new booking and finds nearby drivers
-   * @param data - Booking details including user ID, locations, and vehicle model
-   * @returns Promise resolving to booking details and nearby drivers or error response
-   */
   async createBooking(data: CreateBookingRequest): Promise<ControllerResponse> {
     try {
       const {
@@ -79,19 +74,17 @@ export default class BookingController implements IBookingController {
       };
     }
   }
-  /**
-   * Updates a booking's status
-   * @param data - Object containing booking ID and action
-   * @returns Promise resolving to updated booking or error response
-   */
+
   async updateBooking(data: UpdateBookingRequest): Promise<ControllerResponse> {
     try {
-      const response = await this.bookingService.updateBooking(
-        data.id,
-        data.action
-      );
-      return { message: "Success", data: response };
+      // const response = await this.bookingService.updateBooking(
+      //   data.id,
+      //   data.action
+      // );
+      return { message: "Success", data: { name: "sribin", age: 909 } };
     } catch (error) {
+      console.log("error", error);
+
       return {
         message: `Error updating booking: ${(error as Error).message}`,
         status: "Failed",
@@ -117,6 +110,7 @@ export default class BookingController implements IBookingController {
   async fetchVehicles(): Promise<ControllerResponse> {
     try {
       const response = await this.bookingService.fetchVehicles();
+      console.log("responseresponse", response);
 
       return { message: "Success", data: response };
     } catch (error) {
@@ -164,7 +158,6 @@ export default class BookingController implements IBookingController {
 
   async cancelRide(request: { userId: string; ride_id: string }) {
     try {
-      
       const data = await this.bookingService.cancelRide(
         request.userId,
         request.ride_id
@@ -179,6 +172,98 @@ export default class BookingController implements IBookingController {
       return {
         status: "Failed",
         data: "failed to fetch booking list",
+      };
+    }
+  }
+
+  async getBookingDetailsByBookingId(request: { bookingId: string }) {
+    console.log("ethi mone..", request);
+
+    // const booking = await this.bookingService.fetchDriverBookingDetails(request.bookingId);
+    const data = {
+      name: "sribin",
+      driver: false,
+    };
+    return {
+      status: "Success",
+      data,
+    };
+  }
+
+  // Method to validate booking ID for payment service
+  async validateBookingId(data: { bookingId: string }) {
+    try {
+      const booking = {
+        status: "success",
+        id: " booking.id",
+        userId: "booking.userId",
+        driverId: "booking.driverId",
+        price: "booking.price",
+        bookingStatus: "booking.status",
+      };
+      // await this.bookingService.getBookingById(data.bookingId);
+
+      if (!booking) {
+        return {
+          status: "failed",
+          message: "Booking not found",
+        };
+      }
+
+      return {
+        status: "success",
+        bookingId: booking.id,
+        userId: booking.userId,
+        driverId: booking.driverId,
+        price: booking.price,
+        bookingStatus: booking.status,
+      };
+    } catch (error) {
+      console.error("Error validating booking ID:", error);
+      return {
+        status: "failed",
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  // Method to update booking payment status for saga operations
+  async updateBookingPaymentStatus(data: {
+    bookingId: string;
+    status: string;
+    transactionId: string;
+    amount: number;
+  }) {
+    try {
+      const { bookingId, status, transactionId, amount } = data;
+
+      // Update booking with payment information
+
+      const updateResult = true;
+      // await this.bookingService.updateBookingPaymentStatus({
+      //     bookingId,
+      //     paymentStatus: status,
+      //     transactionId,
+      //     paidAmount: amount,
+      //     paymentCompletedAt: new Date()
+      // });
+
+      if (updateResult) {
+        return {
+          status: "success",
+          message: "Booking payment status updated successfully",
+        };
+      } else {
+        return {
+          status: "failed",
+          message: "Failed to update booking payment status",
+        };
+      }
+    } catch (error) {
+      console.error("Error updating booking payment status:", error);
+      return {
+        status: "failed",
+        message: (error as Error).message,
       };
     }
   }

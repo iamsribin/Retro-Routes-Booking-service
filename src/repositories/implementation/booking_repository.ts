@@ -5,7 +5,7 @@ import { CreateBookingRequest, requestUpdateAcceptRide } from "../../controller/
 import { IBookingRepository } from "../interfaces/IBookingRepo";
 import { mongo } from "mongoose";
 
-export default class BookingRepository implements IBookingRepository {
+export class BookingRepository implements IBookingRepository {
 
 async createBooking(
   data: CreateBookingRequest,

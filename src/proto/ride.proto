@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ride_package;
+
+service Ride {
+    rpc fetchVehicles (RegisterReq) returns (CommonRes) {}
+    rpc fetchDriverBookingList
+    rpc fetchDriverBookingDetails
+    rpc cancelRide
+}
+

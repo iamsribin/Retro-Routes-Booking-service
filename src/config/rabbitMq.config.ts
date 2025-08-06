@@ -3,6 +3,9 @@ export const rabbitMq = {
       url: process.env.RABBITMQ_URL || 'amqp://localhost',
     },
     queues: {
-      bookingQueue: 'ride_booking_queue9',
+      bookingQueue: 'booking_queue',
     },
-  };
+  };              
+
+
+  

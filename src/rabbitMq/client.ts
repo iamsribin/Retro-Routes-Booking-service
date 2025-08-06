@@ -4,7 +4,7 @@ import {rabbitMq} from "../config/rabbitMq.config";
 import Consumer from './consumer';
 import Producer from './producer';
 import MessageHandler from "./messageHandler";
-import BookingController from "../controller/implementaion/booking.controllers";
+import BookingController from "../controller/implementation/booking.controllers";
 import BookingService from '../services/implementation/booking_service';
 import BookingRepository from "../repositories/implementation/booking_repository";
 import { PricingService } from '../services/implementation/pricing_service';
