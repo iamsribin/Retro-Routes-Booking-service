@@ -1,7 +1,11 @@
 {
+  "name": "retro-routes-booking-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
   "scripts": {
-  "start": "nodemon"
-},
+    "start": "nodemon"
+  },
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.1",
@@ -10,11 +14,14 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.13.4",
+    "@grpc/proto-loader": "^0.8.0",
     "@types/amqplib": "^0.10.5",
     "amqplib": "^0.10.4",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "geolib": "^3.3.4",
+    "ioredis": "^5.7.0",
     "mongoose": "^8.13.2",
     "redis": "^4.7.0",
     "socket.io-client": "^4.8.1"
