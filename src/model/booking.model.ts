@@ -2,17 +2,17 @@ import mongoose, { Schema } from 'mongoose';
 import { BookingInterface } from '../interfaces/interface';
 
 const BookingSchema: Schema = new Schema({
-  ride_id: { type: String, required: true },
+  rideId: { type: String, required: true },
 
   user: {
-    user_id: { type: String, required: true },
+    userId: { type: String, required: true },
     userName: { type: String },
     userNumber: { type: String }, 
     userProfile: { type: String }
   },
 
   driver: {
-    driver_id: { type: String },
+    driverId: { type: String },
     driverName: { type: String },
     driverNumber: { type: String }, 
     driverProfile: { type: String }

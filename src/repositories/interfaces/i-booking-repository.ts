@@ -1,13 +1,9 @@
 import { BookingInterface, Coordinates, PricingInterface } from '../../interfaces/interface';
+import { CreateBookingReq } from '../../types/booking/request';
 
 export interface IBookingRepository {
   createBooking(
-    data: {
-      userId: string;
-      pickupLocation: { address: string; latitude: number; longitude: number };
-      dropoffLocation: { address: string; latitude: number; longitude: number };
-      vehicleModel: string;
-    },
+    data: CreateBookingReq,
     distanceKm: number,
     price: number,
     pin: number
@@ -16,5 +12,4 @@ export interface IBookingRepository {
   updateBookingStatus(id: string, status: string): Promise<BookingInterface | null>;
   confirmRide(pin: number): Promise<BookingInterface | null>;
   updateDriverCoordinates(rideId: string, coordinates: Coordinates): Promise<BookingInterface | null>;
-  fetchVehicles(): Promise<PricingInterface[] | null>
 }
