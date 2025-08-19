@@ -36,10 +36,12 @@ export class BookingRepository
         pickupCoordinates: {
           latitude: data.pickupLocation.latitude,
           longitude: data.pickupLocation.longitude,
+          address:data.pickupLocation.address,
         },
         dropoffCoordinates: {
           latitude: data.dropOffLocation.latitude,
           longitude: data.dropOffLocation.longitude,
+          address:data.dropOffLocation.address,
         },
 
         pickupLocation: data.pickupLocation.address,

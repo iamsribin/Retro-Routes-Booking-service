@@ -18,5 +18,6 @@ export interface DriverNotificationPayload {
   pin: number;
   drivers: DriverDetails[];
   timeoutSeconds?: number;
+  estimatedDuration:string;
   createdAt?: Date
 }

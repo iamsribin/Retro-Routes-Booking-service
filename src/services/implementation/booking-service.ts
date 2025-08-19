@@ -10,7 +10,7 @@ import {
 } from "../../types/booking/request";
 import { findNearbyDrivers } from "../../utils/find-near-by-drivers";
 import { DriverNotificationPayload } from "../../types/booking/driver-notification";
-import { RabbitMQPublisher } from "../../events/ride-publisher";
+import { RabbitMQPublisher } from "../../events/publisher";
 
 export class BookingService implements IBookingService {
   constructor(private _bookingRepo: BookingRepository) {}
@@ -31,6 +31,7 @@ export class BookingService implements IBookingService {
           message: "No drivers available for this booking request",
         };
       }
+console.log("dataaa",data);
 
       const pin = generatePIN();
       const booking = await this._bookingRepo.createBooking(
@@ -66,6 +67,7 @@ export class BookingService implements IBookingService {
         },
         distance: booking.distance,
         price: booking.price,
+        estimatedDuration: booking.duration,
         pin: booking.pin,
         drivers: drivers.map((driver) => ({
           driverId: driver.driverId,

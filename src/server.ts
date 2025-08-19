@@ -17,6 +17,7 @@ import { BookingService } from "./services/implementation/booking-service";
 import { VehicleService } from "./services/implementation/vehicle-service";
 import { BookingRepository } from "./repositories/implementation/booking-repository";
 import { PricingRepository } from "./repositories/implementation/pricing-repository";
+import { BookingConsumer } from "./events/consumer";
 
 const bookingRepository = new BookingRepository();
 const pricingRepository = new PricingRepository();
@@ -26,6 +27,12 @@ const bookingService = new BookingService(bookingRepository);
 
 const bookingController = new BookingController(bookingService);
 const vehicleController = new VehicleController(vehicleService);
+
+const consumer = new BookingConsumer(bookingController)
+consumer.start().catch(err => {
+  console.error('Failed to start realtime service', err);
+  process.exit(1);
+});
 
 // === Load gRPC Proto ===
 const PROTO_PATH = path.resolve(__dirname, "./proto/ride.proto");

@@ -1,5 +1,5 @@
-import mongoose, { Schema } from 'mongoose';
-import { BookingInterface } from '../interfaces/interface';
+import mongoose, { Schema } from "mongoose";
+import { BookingInterface } from "../interfaces/interface";
 
 const BookingSchema: Schema = new Schema({
   rideId: { type: String, required: true },
@@ -7,24 +7,26 @@ const BookingSchema: Schema = new Schema({
   user: {
     userId: { type: String, required: true },
     userName: { type: String },
-    userNumber: { type: String }, 
-    userProfile: { type: String }
+    userNumber: { type: String },
+    userProfile: { type: String },
   },
 
   driver: {
     driverId: { type: String },
     driverName: { type: String },
-    driverNumber: { type: String }, 
-    driverProfile: { type: String }
+    driverNumber: { type: String },
+    driverProfile: { type: String },
   },
 
   pickupCoordinates: {
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
+    address: { type: String, required: true },
   },
   dropoffCoordinates: {
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
+    address: { type: String, required: true },
   },
 
   pickupLocation: { type: String, required: true },
@@ -42,8 +44,8 @@ const BookingSchema: Schema = new Schema({
   date: { type: Date, default: Date.now },
   status: {
     type: String,
-    enum: ['Pending', 'Accepted', 'Confirmed', 'Completed', 'Cancelled'],
-    default: 'Pending',
+    enum: ["Pending", "Accepted", "Confirmed", "Completed", "Cancelled"],
+    default: "Pending",
   },
   pin: { type: Number },
   paymentMode: { type: String },
@@ -51,5 +53,5 @@ const BookingSchema: Schema = new Schema({
   rating: { type: Number },
 });
 
-const bookingModel = mongoose.model<BookingInterface>('Booking', BookingSchema);
+const bookingModel = mongoose.model<BookingInterface>("Booking", BookingSchema);
 export default bookingModel;
