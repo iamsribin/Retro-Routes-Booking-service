@@ -1,5 +1,5 @@
 import { IResponse } from '../../types/common/response';
-import { BookingListDTO, CreateBookingResponseDTO } from '../../dto/booking.dto';
+import { BookingDetailsDto, BookingListDTO, CreateBookingResponseDTO } from '../../dto/booking.dto';
 import { CreateBookingReq, DriverAssignmentPayload, UpdateAcceptRideReq } from '../../types/booking/request';
 
 export interface IBookingService {
@@ -8,6 +8,6 @@ export interface IBookingService {
   handleDriverAcceptance(data:DriverAssignmentPayload): Promise<void> 
   // updateAcceptedRide(data:UpdateAcceptRideReq): Promise<IResponse<null>>;
   fetchDriverBookingList(id:string): Promise<IResponse<BookingListDTO[]>>;
-  fetchDriverBookingDetails(id:string): Promise<IResponse<null>>;
+  fetchDriverBookingDetails(id:string): Promise<IResponse<BookingDetailsDto>>;
   cancelRide(user_id: string, ride_id: string): Promise<IResponse<null>>;
 }

@@ -4,7 +4,7 @@ import {
   DriverAssignmentPayload,
 } from "../../types/booking/request";
 import { IResponse } from "../../types/common/response";
-import { BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
+import { BookingDetailsDto, BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
 
 export interface ControllerResponse {
   message: string;
@@ -45,8 +45,8 @@ handleDriverAcceptance(data:DriverAssignmentPayload): Promise<void>
   ): Promise<void>;
 
    fetchDriverBookingDetails(
-    call: ServerUnaryCall<{ id: string }, IResponse<null>>,
-    callback: sendUnaryData<IResponse<null>>
+    call: ServerUnaryCall<{ id: string }, IResponse<BookingDetailsDto>>,
+    callback: sendUnaryData<IResponse<BookingDetailsDto>>
   ): Promise<void>
 
   cancelRide(

@@ -5,21 +5,68 @@ service Ride {
     rpc fetchVehicles (Empty) returns (FetchVehiclesRes) {}
   //-------booking rpc -------
   rpc bookCab (BookCabReq) returns (commonRes);
-  rpc fetchDriverBookingList(fetchDriverBookingListReq) returns (fetchDriverBookingListRes) {}
-  
-  //  rpc createBooking
+  rpc fetchDriverBookingList(id) returns (fetchDriverBookingListRes) {}
+  rpc fetchDriverBookingDetails(id) returns (BookingResponse) {}
    // rpc updateBooking
    // rpc updateAcceptedRide
-   // rpc fetchDriverBookingDetails
     //rpc cancelRide
 }
 
-message fetchDriverBookingListReq {
+message id {
   string id = 1;
 }
 
-message Booking {
+message BookingResponse {
+  int32 status = 1;
+  string message = 2;
+  string navigate = 3;
+  BookingDetails data = 4;
+}
+
+message BookingDetails {
   string id = 1;
+
+  UserInfo user = 2;
+  DriverInfo driver = 3;
+
+  string pickupLocation = 4;
+  string dropoffLocation = 5;
+
+  Coordinates pickupCoordinates = 6;
+  Coordinates dropoffCoordinates = 7;
+
+  string status = 8;
+  double price = 9;
+  string date = 10;
+  string paymentMode = 11;
+  string pin = 12;
+  string feedback = 13;
+  int32 rating = 14;
+
+  string distance = 15;
+  string duration = 16;
+  string vehicleModel = 17;
+}
+
+message UserInfo {
+  string userId = 1;
+  string userName = 2;
+  string userNumber = 3;
+}
+
+message DriverInfo {
+  string driverId = 1;
+  string driverName = 2;
+  string driverNumber = 3;
+}
+
+message Coordinates {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+message Booking {
+  string _id = 1;
   string pickupLocation = 2;
   string dropoffLocation = 3;
   string distance = 4;

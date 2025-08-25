@@ -1,7 +1,7 @@
 import { BookingRepository } from "../../repositories/implementation/booking-repository";
 import { generatePIN } from "../../utils/generatePIN";
 import { IBookingService } from "../interfaces/i-booking-service";
-import { BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
+import { BookingDetailsDto, BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
 import { IResponse } from "../../types/common/response";
 import { StatusCode } from "../../types/common/status-code";
 import {
@@ -140,14 +140,60 @@ async fetchDriverBookingList(id: string): Promise<IResponse<BookingListDTO[]>> {
 }
 
 
-  async fetchDriverBookingDetails(id: string): Promise<IResponse<null>> {
+  async fetchDriverBookingDetails(id: string): Promise<IResponse<BookingDetailsDto>> {
     try {
       const response = await this._bookingRepo.fetchBookingListWithBookingId(
         id
       );
+
+      if(!response) return {
+        status:StatusCode.NotFound,
+        message:"not booking found",
+      }
+
+      const dto: BookingDetailsDto = {
+        id: response._id.toString(),
+        user: {
+          userId: response.user.userId.toString(),
+          userName: response.user.userName,
+          userNumber: response.user.userNumber,
+        },
+        driver: response.driver
+          ? {
+              driverId: response.driver.driverId.toString(),
+              driverName: response.driver.driverName,
+              driverNumber: response.driver.driverNumber,
+            }
+          : undefined,
+
+        pickupLocation: response.pickupLocation,
+        dropoffLocation: response.dropoffLocation,
+        pickupCoordinates: {
+          latitude: response.pickupCoordinates.latitude,
+          longitude: response.pickupCoordinates.longitude,
+        },
+        dropoffCoordinates: {
+          latitude: response.dropoffCoordinates.latitude,
+          longitude: response.dropoffCoordinates.longitude,
+        },
+
+        status: response.status,
+        price: response.price,
+        date: response.date.toISOString(),
+        paymentMode: response.paymentMode,
+        pin: response.pin,
+        feedback: response.feedback,
+        rating: response.rating,
+
+        distance: response.distance,
+        duration: response.duration,
+        vehicleModel: response.vehicleModel,
+      };
+
       return {
         status: StatusCode.OK,
-        message: "successfully fetch booking details",
+        message: "Successfully fetched booking details",
+        data: dto,
       };
     } catch (error) {
       console.log("fetchDriverBookingList service", error);

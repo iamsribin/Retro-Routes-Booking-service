@@ -60,7 +60,7 @@ server.addService(rideProto.Ride.service, {
 fetchVehicles:vehicleController.fetchVehicles.bind(vehicleController),
 bookCab:bookingController.createBooking.bind(bookingController),
 fetchDriverBookingList:bookingController.fetchDriverBookingList.bind(bookingController),
-// fetchDriverBookingDetails:bookingController.fetchDriverBookingDetails.bind(bookingController),
+fetchDriverBookingDetails:bookingController.fetchDriverBookingDetails.bind(bookingController),
 // cancelRide:bookingController.cancelRide.bind(bookingController),
 })
 

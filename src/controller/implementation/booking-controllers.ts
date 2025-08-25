@@ -1,7 +1,7 @@
 import { IBookingController } from "../interfaces/i-booking-controller";
 import { sendUnaryData, ServerUnaryCall } from "@grpc/grpc-js";
 import { IResponse } from "../../types/common/response";
-import { BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
+import { BookingDetailsDto, BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
 import { StatusCode } from "../../types/common/status-code";
 import { IBookingService } from "../../services/interfaces/i-booking-service";
 import {
@@ -72,10 +72,8 @@ export class BookingController implements IBookingController {
   ): Promise<void> {
     try {
       const { id } = call.request;
-      console.log("ehti fetchDriverBookingList",id);
       
       const response = await this._bookingService.fetchDriverBookingList(id);
-      console.log("data====", response);
       callback(null, response);
     } catch (error) {
       console.log(error);
@@ -87,8 +85,8 @@ export class BookingController implements IBookingController {
   }
 
   async fetchDriverBookingDetails(
-    call: ServerUnaryCall<{ id: string }, IResponse<null>>,
-    callback: sendUnaryData<IResponse<null>>
+    call: ServerUnaryCall<{ id: string }, IResponse<BookingDetailsDto>>,
+    callback: sendUnaryData<IResponse<BookingDetailsDto>>
   ): Promise<void> {
     try {
       const { id } = call.request;
