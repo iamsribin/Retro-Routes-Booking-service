@@ -5,12 +5,34 @@ service Ride {
     rpc fetchVehicles (Empty) returns (FetchVehiclesRes) {}
   //-------booking rpc -------
   rpc bookCab (BookCabReq) returns (commonRes);
+  rpc fetchDriverBookingList(fetchDriverBookingListReq) returns (fetchDriverBookingListRes) {}
+  
   //  rpc createBooking
    // rpc updateBooking
    // rpc updateAcceptedRide
-   // rpc fetchDriverBookingList
    // rpc fetchDriverBookingDetails
     //rpc cancelRide
+}
+
+message fetchDriverBookingListReq {
+  string id = 1;
+}
+
+message Booking {
+  string id = 1;
+  string pickupLocation = 2;
+  string dropoffLocation = 3;
+  string distance = 4;
+  double price = 5;
+  string date = 6;  // ISO string
+  string status = 7;
+}
+
+message fetchDriverBookingListRes {
+  int32 status = 1;
+  string message = 2;
+  string navigate = 3;
+  repeated Booking data = 4;
 }
 
 message Location {

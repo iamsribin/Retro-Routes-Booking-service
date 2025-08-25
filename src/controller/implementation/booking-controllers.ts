@@ -1,11 +1,12 @@
 import { IBookingController } from "../interfaces/i-booking-controller";
 import { sendUnaryData, ServerUnaryCall } from "@grpc/grpc-js";
 import { IResponse } from "../../types/common/response";
-import { CreateBookingResponseDTO } from "../../dto/booking.dto";
+import { BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
 import { StatusCode } from "../../types/common/status-code";
 import { IBookingService } from "../../services/interfaces/i-booking-service";
 import {
   CreateBookingReq,
+  DriverAssignmentPayload,
   UpdateAcceptRideReq,
   UpdateBookingReq,
 } from "../../types/booking/request";
@@ -24,7 +25,6 @@ export class BookingController implements IBookingController {
       const data = { ...call.request };
 
       const response = await this._bookingService.createBooking(data);
-      console.log("response", response);
 
       callback(null, response);
     } catch (error) {
@@ -35,51 +35,45 @@ export class BookingController implements IBookingController {
     }
   }
 
-  async updateBooking(
-    call: ServerUnaryCall<UpdateBookingReq, IResponse<null>>,
-    callback: sendUnaryData<IResponse<null>>
-  ): Promise<void> {
+  // async updateBooking(
+  //   call: ServerUnaryCall<UpdateBookingReq, IResponse<null>>,
+  //   callback: sendUnaryData<IResponse<null>>
+  // ): Promise<void> {
+  //   try {
+  //     const data = { ...call.request };
+  //     const response = await this._bookingService.updateBooking(
+  //       data.id,
+  //       data.action
+  //     );
+
+  //     callback(null, response);
+  //   } catch (error) {
+  //     console.log("error", error);
+
+  //     callback(null, {
+  //       status: StatusCode.InternalServerError,
+  //       message: (error as Error).message,
+  //     });
+  //   }
+  // }
+
+  async handleDriverAcceptance(data:DriverAssignmentPayload): Promise<void> {
     try {
-      const data = { ...call.request };
-      const response = await this._bookingService.updateBooking(
-        data.id,
-        data.action
-      );
-
-      callback(null, response);
+     await this._bookingService.handleDriverAcceptance(data);
     } catch (error) {
-      console.log("error", error);
-
-      callback(null, {
-        status: StatusCode.InternalServerError,
-        message: (error as Error).message,
-      });
-    }
-  }
-
-  async updateAcceptedRide(
-    call: ServerUnaryCall<UpdateAcceptRideReq, IResponse<null>>,
-    callback: sendUnaryData<IResponse<null>>
-  ): Promise<void> {
-    try {
-      const data = { ...call.request };
-      const response = await this._bookingService.updateAcceptedRide(data);
-      callback(null, response);
-      // return { message: "Success", data: response };
-    } catch (error) {
-      callback(null, {
-        status: StatusCode.InternalServerError,
-        message: (error as Error).message,
-      });
+     console.log("error",error);
+     
     }
   }
 
   async fetchDriverBookingList(
-    call: ServerUnaryCall<{ id: string }, IResponse<null>>,
-    callback: sendUnaryData<IResponse<null>>
+    call: ServerUnaryCall<{ id: string }, IResponse<BookingListDTO[]>>,
+    callback: sendUnaryData<IResponse<BookingListDTO[]>>
   ): Promise<void> {
     try {
       const { id } = call.request;
+      console.log("ehti fetchDriverBookingList",id);
+      
       const response = await this._bookingService.fetchDriverBookingList(id);
       console.log("data====", response);
       callback(null, response);

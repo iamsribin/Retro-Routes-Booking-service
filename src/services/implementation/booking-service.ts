@@ -1,11 +1,12 @@
 import { BookingRepository } from "../../repositories/implementation/booking-repository";
 import { generatePIN } from "../../utils/generatePIN";
 import { IBookingService } from "../interfaces/i-booking-service";
-import { CreateBookingResponseDTO } from "../../dto/booking.dto";
+import { BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
 import { IResponse } from "../../types/common/response";
 import { StatusCode } from "../../types/common/status-code";
 import {
   CreateBookingReq,
+  DriverAssignmentPayload,
   UpdateAcceptRideReq,
 } from "../../types/booking/request";
 import { findNearbyDrivers } from "../../utils/find-near-by-drivers";
@@ -31,7 +32,7 @@ export class BookingService implements IBookingService {
           message: "No drivers available for this booking request",
         };
       }
-console.log("dataaa",data);
+      console.log("dataaa", data);
 
       const pin = generatePIN();
       const booking = await this._bookingRepo.createBooking(
@@ -69,18 +70,12 @@ console.log("dataaa",data);
         price: booking.price,
         estimatedDuration: booking.duration,
         pin: booking.pin,
-        drivers: drivers.map((driver) => ({
-          driverId: driver.driverId,
-          distance: driver.distance,
-          rating: driver.rating,
-          cancelCount: driver.cancelCount,
-          score: driver.score,
-        })),
+        drivers: drivers,
         timeoutSeconds: 30,
         createdAt: new Date(),
       };
 
-      console.log("sending request to realtiem",notificationPayload);
+      console.log("sending request to realtiem", notificationPayload);
       await RabbitMQPublisher.publish("booking.request", notificationPayload);
 
       return {
@@ -111,38 +106,39 @@ console.log("dataaa",data);
     }
   }
 
-  async updateAcceptedRide(
-    data: UpdateAcceptRideReq
-  ): Promise<IResponse<null>> {
+  async handleDriverAcceptance(data: DriverAssignmentPayload): Promise<void> {
     try {
       const response = await this._bookingRepo.updateAcceptedRide(data);
-      if (!response) {
-        return {
-          status: StatusCode.Forbidden,
-          message: "field unmatched",
-        };
-      }
-      return {
-        status: StatusCode.OK,
-        message: "successfully updated",
-      };
     } catch (error) {
       throw new Error(`Failed to update booking: ${(error as Error).message}`);
     }
   }
 
-  async fetchDriverBookingList(id: string): Promise<IResponse<null>> {
-    try {
-      const response = await this._bookingRepo.fetchBookingListWithDriverId(id);
-      return {
-        status: StatusCode.OK,
-        message: "successfully fetch the booking list",
-      };
-    } catch (error) {
-      console.log("fetchDriverBookingList service", error);
-      throw new Error(`Failed fetch vehicles: ${(error as Error).message}`);
-    }
+async fetchDriverBookingList(id: string): Promise<IResponse<BookingListDTO[]>> {
+  try {    
+    const response = await this._bookingRepo.fetchBookingListWithDriverId(id);
+
+    const dtoList: BookingListDTO[] = response.map((booking) => ({
+      _id: booking._id.toString(),
+      pickupLocation: booking.pickupLocation,
+      dropoffLocation: booking.dropoffLocation,
+      distance: booking.distance || null,
+      price: booking.price ?? null,
+      date: booking.date,
+      status: booking.status,
+    }));
+
+    return {
+      status: StatusCode.OK,
+      message: "Successfully fetched the booking list",
+      data: dtoList,
+    };
+  } catch (error) {
+    console.log("fetchDriverBookingList service", error);
+    throw new Error(`Failed to fetch bookings: ${(error as Error).message}`);
   }
+}
+
 
   async fetchDriverBookingDetails(id: string): Promise<IResponse<null>> {
     try {

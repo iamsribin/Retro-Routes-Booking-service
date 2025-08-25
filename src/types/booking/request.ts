@@ -1,3 +1,4 @@
+import { Coordinates } from "../../interfaces/interface";
 
 export interface CreateBookingReq {
   userId: string;
@@ -39,4 +40,16 @@ export interface UpdateAcceptRideReq {
     number: number;
     color: string;
   };
+}
+
+export interface DriverAssignmentPayload {
+  bookingId: string;
+  rideId: string;
+  driver: {
+    driverId: string;
+    driverName: string;
+    driverNumber: string;
+    driverProfile: string;
+  };
+  driverCoordinates: Coordinates
 }

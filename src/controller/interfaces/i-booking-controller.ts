@@ -1,12 +1,10 @@
 import { sendUnaryData, ServerUnaryCall } from "@grpc/grpc-js";
-import { BookingInterface, Coordinates } from "../../interfaces/interface";
 import {
   CreateBookingReq,
-  UpdateAcceptRideReq,
-  UpdateBookingReq,
+  DriverAssignmentPayload,
 } from "../../types/booking/request";
 import { IResponse } from "../../types/common/response";
-import { CreateBookingResponseDTO } from "../../dto/booking.dto";
+import { BookingListDTO, CreateBookingResponseDTO } from "../../dto/booking.dto";
 
 export interface ControllerResponse {
   message: string;
@@ -31,22 +29,19 @@ export interface IBookingController {
   ): Promise<void>;
   // createBooking(data: CreateBookingReq): Promise<ControllerResponse>;
 
-  updateBooking(
-    call: ServerUnaryCall<UpdateBookingReq, IResponse<null>>,
-    callback: sendUnaryData<IResponse<null>>
-  ): Promise<void>;
+  // updateBooking(
+  //   call: ServerUnaryCall<UpdateBookingReq, IResponse<null>>,
+  //   callback: sendUnaryData<IResponse<null>>
+  // ): Promise<void>;
   // updateBooking(data: UpdateBookingRequest): Promise<ControllerResponse>;
 
-  updateAcceptedRide(
-    call: ServerUnaryCall<UpdateAcceptRideReq, IResponse<null>>,
-    callback: sendUnaryData<IResponse<null>>
-  ): Promise<void>;
+handleDriverAcceptance(data:DriverAssignmentPayload): Promise<void> 
   // updateAcceptedRide(
   //   data: UpdateAcceptRideReq
   // ): Promise<ControllerResponse>;
   fetchDriverBookingList(
-    call: ServerUnaryCall<{id:string}, IResponse<null>>,
-    callback: sendUnaryData<IResponse<null>>
+    call: ServerUnaryCall<{id:string}, IResponse<BookingListDTO[]>>,
+    callback: sendUnaryData<IResponse<BookingListDTO[]>>
   ): Promise<void>;
 
    fetchDriverBookingDetails(

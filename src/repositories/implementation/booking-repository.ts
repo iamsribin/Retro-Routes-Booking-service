@@ -4,6 +4,7 @@ import { IBookingRepository } from "../interfaces/i-booking-repository";
 import { BaseRepository } from "./base-repository";
 import {
   CreateBookingReq,
+  DriverAssignmentPayload,
   UpdateAcceptRideReq,
 } from "../../types/booking/request";
 
@@ -117,24 +118,22 @@ export class BookingRepository
   }
 
   async updateAcceptedRide(
-    data: UpdateAcceptRideReq
+    data: DriverAssignmentPayload
   ): Promise<BookingInterface | null> {
     try {
-      console.log("data---=", data);
-
       const updatedBooking = await bookingModel.findByIdAndUpdate(
         data.bookingId,
         {
           $set: {
             driver: {
-              driver_id: data.driverDetails.driverId,
-              driverName: data.driverDetails.driverName,
-              driverNumber: data.driverDetails.mobile,
-              driverProfile: data.driverDetails.driverImage,
+              driverId: data.driver.driverId,
+              driverName: data.driver.driverName,
+              driverNumber: data.driver.driverNumber,
+              driverProfile: data.driver.driverProfile,
             },
             driverCoordinates: {
-              latitude: parseFloat(data.driverCoordinates.latitude),
-              longitude: parseFloat(data.driverCoordinates.longitude),
+              latitude: data.driverCoordinates.latitude,
+              longitude:data.driverCoordinates.longitude,
             },
             status: "Accepted",
           },

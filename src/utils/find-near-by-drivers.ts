@@ -11,6 +11,11 @@ export interface DriverDetails {
   rating: number;
   cancelCount: number;
   score: number;
+  vehicleModel?: string;
+  vehicleNumber?: string;
+  driverName?: string;
+  driverPhoto?: string;
+  phoneNumber?: string;
 }
 
 export async function findNearbyDrivers(
@@ -21,7 +26,7 @@ export async function findNearbyDrivers(
   try {
     console.log("reached here...");
 
-    // 1️⃣ Get drivers within 5km radius using GEOSEARCH 
+    // 1️⃣ Get drivers within 5km radius using GEOSEARCH
     const drivers = (await redis.georadius(
       GEO_KEY,
       longitude,
@@ -30,7 +35,6 @@ export async function findNearbyDrivers(
       "m",
       "WITHDIST"
     )) as Array<[string, string]>;
-    console.log("drivers==", drivers);
 
     if (!drivers.length) return [];
 
@@ -53,14 +57,17 @@ export async function findNearbyDrivers(
       if (!driverData) return;
 
       const parsedDriver = JSON.parse(driverData);
-
       // ✅ Ensure vehicle matches
       if (parsedDriver.vehicleModel !== vehicleModel) return;
 
       const distance = parseFloat(distanceStr); // meters
       const rating = parsedDriver.rating || 0; // 0–5
-      const cancelCount = parsedDriver.cancelCount || 0;
-
+      const cancelCount = parsedDriver.cancelledRides || 0;
+      const driverName = parsedDriver.name;
+      const vehicleNumber = parsedDriver.vehicleNumber;
+      const driverPhoto = parsedDriver.driverPhoto;
+      const phoneNumber = parsedDriver.driverNumber;
+      
       // 4️⃣ Normalize values
       const normalizedRating = Math.min(rating / 5, 1); // 0–1
       const normalizedDistance = Math.min(distance / 5000, 1); // 0–1 (cap at 5km)
@@ -75,6 +82,11 @@ export async function findNearbyDrivers(
       driverDetails.push({
         driverId,
         distance,
+        phoneNumber,
+        driverName,
+        driverPhoto,
+        vehicleModel,
+        vehicleNumber,
         rating,
         cancelCount,
         score,

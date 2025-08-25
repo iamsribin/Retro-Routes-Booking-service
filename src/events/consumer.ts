@@ -1,5 +1,6 @@
 import { createRabbit } from "../config/rabbitmq";
 import { BookingController } from "../controller/implementation/booking-controllers";
+import { DriverAssignmentPayload } from "../types/booking/request";
 
 export class BookingConsumer {
   private ch: any;
@@ -16,10 +17,10 @@ export class BookingConsumer {
     await ch.consume("booking.driverAcceptance", async (msg: any) => {
       if (!msg) return;
       try {
-        const payload = JSON.parse(msg.content.toString());
+        const payload:DriverAssignmentPayload = JSON.parse(msg.content.toString());
         console.log("📩 booking.driverAcceptance payload:", payload);
 
-        // await this._bookingController.handleDriverAcceptance(payload);
+        await this._bookingController.handleDriverAcceptance(payload);
 
         ch.ack(msg);
       } catch (err) {

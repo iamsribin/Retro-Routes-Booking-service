@@ -1,5 +1,13 @@
 
-
+export interface BookingListDTO {
+  _id: string;
+  pickupLocation: string;
+  dropoffLocation: string;
+  distance: string | null;
+  price: number | null;
+  date: Date;
+  status: string;
+}
 
 export interface CreateBookingResponseDTO {
     userData: {
